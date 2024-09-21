@@ -1,8 +1,19 @@
+// src/pages/index.tsx
 import Head from "next/head";
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { api } from "~/utils/api";
+import type { Post } from "../types";  // Adjust the path if needed
 
 export default function Home() {
   const { isSignedIn } = useUser();
+
+  // Explicitly type the data returned from the API
+  const { data, error } = api.post.getLatest.useQuery();
+
+  if (error) {
+    console.error("Failed to fetch data", error);
+    return <div>Error fetching data</div>;  // Handle the error
+  }
 
   return (
     <>
@@ -20,9 +31,22 @@ export default function Home() {
           <div className="flex flex-col items-center gap-4">
             <h2 className="text-2xl font-semibold text-white"></h2>
             <div className="px-4 py-2 font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
-              {!isSignedIn && <SignInButton /> }
-              {isSignedIn && <SignOutButton /> }
+              {!isSignedIn && <SignInButton />}
+              {isSignedIn && <SignOutButton />}
             </div>
+          </div>
+
+          {/* Render the data from the API */}
+          <div className="flex flex-col items-center gap-4">
+            {Array.isArray(data) ? (
+              data.map((post: Post) => (
+                <div key={post.id} className="text-white">
+                  {post.title}
+                </div>
+              ))
+            ) : (
+              <div className="text-white">Suck a dick</div>
+            )}
           </div>
         </div>
       </main>
