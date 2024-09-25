@@ -8,13 +8,12 @@ export default function Home() {
   const { isSignedIn } = useUser();
 
   // Explicitly type the data returned from the API
-  const { data, error } = api.post.getLatest.useQuery();
+  const { data, error } = api.post.getAll.useQuery();
 
   if (error) {
     console.error("Failed to fetch data", error);
     return <div>Error fetching data</div>;  // Handle the error
   }
-
   return (
     <>
       <Head>
@@ -34,19 +33,9 @@ export default function Home() {
               {!isSignedIn && <SignInButton />}
               {isSignedIn && <SignOutButton />}
             </div>
-          </div>
-
-          {/* Render the data from the API */}
-          <div className="flex flex-col items-center gap-4">
-            {Array.isArray(data) ? (
-              data.map((post: Post) => (
-                <div key={post.id} className="text-white">
-                  {post.title}
-                </div>
-              ))
-            ) : (
-              <div className="text-white">Suck a dick</div>
-            )}
+            <div>
+              {data?.map((post) => (<div key={post.id}>{post.content}</div>))}
+            </div>
           </div>
         </div>
       </main>
